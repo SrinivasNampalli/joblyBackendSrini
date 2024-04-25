@@ -48,34 +48,48 @@ class SurveyAPI:
             json_ready = [survey.read() for survey in surveys]  # prepare output in json
             return jsonify(json_ready) # j
 
-    # building RESTapi endpoint
     api.add_resource(_CRUD, '/')
 def suggest_job(independent, artistic_talent, communication_skills, fastTyper, handy_person, problem_solving, show_off, team_player):
-    job_suggested = "None"  
+    points = {
+        "Graphic Designer": 0,
+        "Multimedia Artist": 0,
+        "Virtual Assistant": 0,
+        "Social Media Influencer": 0,
+        "Public Relations Specialist": 0,
+        "Communications Specialist": 0,
+        "Data Entry Clerk": 0,
+        "Maintenance Technician": 0,
+        "Problem Solver": 0,
+        "Salesperson": 0,
+        "Team Coordinator": 0
+    }
 
-    # Conditions based on survey responses
-    if independent == 'Yes' and artistic_talent == 'Yes':
-        job_suggested = "Graphic Designer"
-    elif artistic_talent == 'Yes' and communication_skills == 'Yes':
-        job_suggested = "Multimedia Artist"
-    elif fastTyper == 'Yes' and handy_person == 'Yes':
-        job_suggested = "Virtual Assistant"
-    elif problem_solving == 'Yes' and show_off == 'Yes':
-        job_suggested = "Social Media Influencer"
-    elif team_player == 'Yes' and communication_skills == 'Yes':
-        job_suggested = "Public Relations Specialist"
-    elif communication_skills == 'Yes':
-        job_suggested = "Communications Specialist"
-    elif fastTyper == 'Yes':
-        job_suggested = "Data Entry Clerk"
-    elif handy_person == 'Yes':
-        job_suggested = "Maintenance Technician"
-    elif problem_solving == 'Yes':
-        job_suggested = "Problem Solver"
-    elif show_off == 'Yes':
-        job_suggested = "Salesperson"
-    elif team_player == 'Yes':
-        job_suggested = "Team Coordinator"
-    
+    traits = [
+        (independent, "Graphic Designer", 2),
+        (artistic_talent, "Graphic Designer", 1),
+        (artistic_talent, "Multimedia Artist", 1),
+        (communication_skills, "Multimedia Artist", 1),
+        (communication_skills, "Public Relations Specialist", 1),
+        (communication_skills, "Communications Specialist", 1),
+        (communication_skills, "Team Coordinator", 1),
+        (fastTyper, "Virtual Assistant", 1),
+        (fastTyper, "Data Entry Clerk", 1),
+        (handy_person, "Virtual Assistant", 1),
+        (handy_person, "Maintenance Technician", 1),
+        (problem_solving, "Social Media Influencer", 1),
+        (problem_solving, "Problem Solver", 1),
+        (show_off, "Social Media Influencer", 1),
+        (show_off, "Salesperson", 1),
+        (team_player, "Public Relations Specialist", 1),
+        (team_player, "Team Coordinator", 1)
+    ]
+
+    for trait, job, point in traits:
+        if trait == 'Yes':
+            points[job] += point
+
+    job_suggested = max(points, key=points.get)
+
     return job_suggested
+
 
