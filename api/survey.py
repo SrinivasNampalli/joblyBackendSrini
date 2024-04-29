@@ -23,6 +23,7 @@ class SurveyAPI:
             showOff = body['showOff']
             teamPlayer = body['teamPlayer']
             
+            
             job_suggested = suggest_job(independent, artisticTalent, communicationSkills, fastTyper, handyPerson, problemSolving, showOff, teamPlayer)
             print(job_suggested)
             survey = Survey(
@@ -41,12 +42,13 @@ class SurveyAPI:
             if survey:
                 return jsonify(survey.read())
 
+            
             return {'message': f'Error processing request'}, 400
             
         def get(self):
-            surveys = surveys.query.all()    # read/extract all users from database
-            json_ready = [survey.read() for survey in surveys]  # prepare output in json
-            return jsonify(json_ready) # j
+            surveys = surveys.query.all()  
+            json_ready = [survey.read() for survey in surveys]  
+            return jsonify(json_ready) 
 
     api.add_resource(_CRUD, '/')
 def suggest_job(independent, artistic_talent, communication_skills, fastTyper, handy_person, problem_solving, show_off, team_player):
@@ -54,42 +56,30 @@ def suggest_job(independent, artistic_talent, communication_skills, fastTyper, h
         "Graphic Designer": 0,
         "Multimedia Artist": 0,
         "Virtual Assistant": 0,
-        "Social Media Influencer": 0,
-        "Public Relations Specialist": 0,
-        "Communications Specialist": 0,
-        "Data Entry Clerk": 0,
-        "Maintenance Technician": 0,
-        "Problem Solver": 0,
-        "Salesperson": 0,
-        "Team Coordinator": 0
+        "Software Engineer": 0
     }
 
-    traits = [
-        (independent, "Graphic Designer", 2),
-        (artistic_talent, "Graphic Designer", 1),
-        (artistic_talent, "Multimedia Artist", 1),
-        (communication_skills, "Multimedia Artist", 1),
-        (communication_skills, "Public Relations Specialist", 1),
-        (communication_skills, "Communications Specialist", 1),
-        (communication_skills, "Team Coordinator", 1),
-        (fastTyper, "Virtual Assistant", 1),
-        (fastTyper, "Data Entry Clerk", 1),
-        (handy_person, "Virtual Assistant", 1),
-        (handy_person, "Maintenance Technician", 1),
-        (problem_solving, "Social Media Influencer", 1),
-        (problem_solving, "Problem Solver", 1),
-        (show_off, "Social Media Influencer", 1),
-        (show_off, "Salesperson", 1),
-        (team_player, "Public Relations Specialist", 1),
-        (team_player, "Team Coordinator", 1)
-    ]
+    job_questions = {
+        "Graphic Designer": [1, 3, 8],
+        "Multimedia Artist": [1, 4, 8],
+        "Virtual Assistant": [2, 5, 6],
+        "Software Engineer": [1, 3, 7]
+    }
+    
 
-    for trait, job, point in traits:
-        if trait == 'Yes':
-            points[job] += point
+    answers = [independent, artistic_talent, communication_skills, fastTyper, handy_person, problem_solving, show_off, team_player]
 
-    job_suggested = max(points, key=points.get)
+    for job, questions in job_questions.items():
+        for question in questions:
+            if answers[question - 1] == 'yes':
+                points[job] += 1
 
-    return job_suggested
+    max_points = max(points.values())
+    suggested_jobs = [job for job, score in points.items() if score == max_points]
+    suggestion = ' or '.join(suggested_jobs)
+    print(suggestion)
+    return suggestion
+
+
 
 
